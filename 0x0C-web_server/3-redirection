@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# configuring Nginx to redirect to another page.
+
+sudo apt-get install -y nginx
+sudo ufw allow 'Nginx HTTP'
+echo "Welcome to the world of SARK" | sudo tee var/www/html/index.nginx-debian.html
+line="\\\trewrite ^/redirect_me https://www.google.com permanent;"
+sudo sed -i "26i $line" /etc/nginx/sites-available/default_2
+sudo service nginx restart
