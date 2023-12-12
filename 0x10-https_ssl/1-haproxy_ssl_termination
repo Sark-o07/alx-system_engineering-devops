@@ -1,0 +1,47 @@
+global
+    log /dev/log local0
+    log /dev/log local1 notice
+    chroot /var/lib/haproxy
+    stats socket /run/haproxy/admin.sock mode 660 level admin
+    stats timeout 30s
+    user haproxy
+    group haproxy
+    maxconn 2048
+    tune.ssl.default-dh-param 2048
+    daemon
+
+# Default settings
+defaults
+    log global
+    mode http
+    option httplog
+    option dontlognull
+    option forwardfor
+    option http-server-close
+    timeout connect 5000
+    timeout client 50000
+    timeout server 50000
+
+# Frontend configuration
+frontend http
+    bind *:80
+    redirect scheme https code if !{ ssl_fc }
+    reqadd X-Forwarded-Proto:\ http
+    default_backend web_server
+
+frontend https
+    bind *:443 ssl crt /etc/haproxy/certs/www.sark-shot.tech.pem
+    reqadd X-Forwarded-Proto:\ https
+    acl letsencrypt-acl path_beg /.well-known/acme-cahllenge/
+    use_backend letsencrypt-backend if letsencrypt-acl
+    default_backend web_server
+
+# Backend configuration
+backend web_server
+    balance roundrobin
+    server 339955-web-01 54.226.23.44:80
+    server 339955-web-02 54.242.170.193:80
+
+backend letsencrypt-backend
+    server letsencrypt 127.0.0.1:54321
+~                                          
