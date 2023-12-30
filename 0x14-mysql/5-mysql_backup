@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Script to create backup of mysql databases and compress them using tar.gz format
+# Usage - ./5-mysql_backup mysql_account_password
+archive_name=$(date +'%d-%m-%Y').tar.gz
+sudo mysqldump -uroot -p"$1" --all-databases --single-transaction > backup.sql
+tar -czvf "$archive_name" backup.sql
