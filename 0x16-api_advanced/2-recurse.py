@@ -1,18 +1,18 @@
 #!/usr/bin/python3
 """
-Recursive function that queries reddit API and returnd list for article.
+Using reddit's API
 """
-from requests import get
+import requests
 after = None
 
 
 def recurse(subreddit, hot_list=[]):
-    """returning top ten post titles recursively."""
+    """returning top ten post titles recursively"""
     global after
-    headers = {'User-Agent': 'api_advanced-project'}
+    user_agent = {'User-Agent': 'api_advanced-project'}
     url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
     parameters = {'after': after}
-    results = requests.get(url, params=parameters, headers=headers,
+    results = requests.get(url, params=parameters, headers=user_agent,
                            allow_redirects=False)
 
     if results.status_code == 200:
